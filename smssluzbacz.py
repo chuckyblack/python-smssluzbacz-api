@@ -5,7 +5,8 @@ import logging, urllib
 log = logging.getLogger(__name__)
 
 class SmsApiLite():
-    ''' Implements 'Lite' version of sms.sluzba.cz HTTP API
+    '''
+    Implements 'Lite' version of sms.sluzba.cz HTTP API
     The only possibility of lite version is to send POST/GET request to send SMS
     with no advanced options and operations.
     '''
@@ -14,7 +15,8 @@ class SmsApiLite():
     truncate_limit = 459
     
     def __init__(self, login, password):
-        ''' Initialize new lite client
+        '''
+        Initialize new lite client
 
         Args:
         login: Username for sms.sluzba.cz account
@@ -25,7 +27,8 @@ class SmsApiLite():
         log.debug('Initiated %s for user: %s', self.__class__.__name__, self._login)
 
     def send(self, number, text, use_https=True, use_post=True):
-        ''' Send SMS, raise SmsApiException if something other than 200 is returned
+        '''
+        Send SMS, raise SmsApiException if something other than 200 is returned
 
         Args:
         number: phone number, international or 9-digit format.
@@ -73,6 +76,8 @@ class SmsApiLite():
             raise SmsApiException('Unexpected empty response')
 
 class SmsApiException(Exception):
-    """Raised when SMS API operation failed"""
+    '''
+    Raised when SMS API operation failed
+    '''
     def __init__(self, message):
         self.message = message
