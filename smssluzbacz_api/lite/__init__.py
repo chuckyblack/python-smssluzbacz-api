@@ -58,7 +58,6 @@ class SmsGateApi(object):
         """
         if message is not None and len(message) > TRUNCATE_LIMIT:
             log.warn('Message text exceeds %d characters and will be automatically truncated', TRUNCATE_LIMIT)
-        log.info('Sending SMS to number: %s, message text: %s', tel_number, message)
         params = (
             ('login', self.login),
             ('password', self.password),
