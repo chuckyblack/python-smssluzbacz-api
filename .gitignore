@@ -2,7 +2,11 @@
 *.pyo
 *.swp
 *.swo
+.idea
+pip-log.txt*
 *.swn
+/smssluzbacz_api.egg-info/
+/dist/
 # Emacs backup files & locks
 *~
 \#*
