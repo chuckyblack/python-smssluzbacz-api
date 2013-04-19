@@ -1,4 +1,4 @@
-__version__ = '0.9'
+__version__ = '1.0'
 
 import urllib
 import urllib2
@@ -52,6 +52,7 @@ class Transport(object):
             response = self.opener.open(self.url, timeout=self.timeout, data=data)
             contents = response.read()
             response.close()
+            return response, contents
         except ValueError:
             log.exception('Url to is invalid')
             raise
@@ -63,7 +64,6 @@ class Transport(object):
             raise
         finally:
             self.opener.close()
-            return response, contents
 
 
 class Error(Exception):

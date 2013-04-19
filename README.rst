@@ -63,8 +63,8 @@ Tests
 
 **Tested on environment**
 
-- Xubuntu Linux 11.10 oneiric 64-bit
-- python 2.7.2+
+- Xubuntu Linux 12.04 LTS precise 64-bit
+- python 2.7.3
 - python unittest
 
 **Running tests**
