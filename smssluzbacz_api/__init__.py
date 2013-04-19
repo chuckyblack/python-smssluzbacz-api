@@ -52,7 +52,6 @@ class Transport(object):
             response = self.opener.open(self.url, timeout=self.timeout, data=data)
             contents = response.read()
             response.close()
-            return (response, contents)
         except ValueError:
             log.exception('Url to is invalid')
             raise
@@ -62,6 +61,9 @@ class Transport(object):
         except urllib2.HTTPError:
             log.exception('Something went wrong while requesting url %s', self.url)
             raise
+        finally:
+            self.opener.close()
+            return response, contents
 
 
 class Error(Exception):
