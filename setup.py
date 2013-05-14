@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from setuptools import setup
+from setuptools import setup, find_packages
 import smssluzbacz_api
 import os
 
@@ -14,7 +14,6 @@ def read(fname):
     """
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-
 setup(
     name='smssluzbacz-api',
     version=smssluzbacz_api.__version__,
@@ -26,10 +25,10 @@ setup(
     download_url='https://github.com/jsk/python-smssluzbacz-api/tarball/master',
     license='BSD',
     keywords = 'sms api',
-    packages=['smssluzbacz_api', 'smssluzbacz_api.lite', 'smssluzbacz_api.post',
-              'smssluzbacz_api.xml', 'smssluzbacz_api.test', 'smssluzbacz_api.test.lite',
-              'smssluzbacz_api.test.post', 'smssluzbacz_api.test.xml'],
+    packages=find_packages(),
     platforms='any',
+    install_requires=['requests'],
+    tests_require=['mock'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Console',

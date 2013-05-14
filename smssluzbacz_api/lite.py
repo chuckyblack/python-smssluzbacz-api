@@ -2,11 +2,16 @@ import re
 import logging
 import urllib
 
-from smssluzbacz_api import Transport, TelephoneNumberError, MessageError, ActionError, LoginError, CreditError,\
-    GateError, TRUNCATE_LIMIT
+import requests
+
+from smssluzbacz_api import TelephoneNumberError, MessageError, ActionError, LoginError, CreditError,\
+    GateError, TRUNCATE_LIMIT, USER_AGENT
 
 
 log = logging.getLogger(__name__)
+
+
+__all__ = ['SmsGateApi']
 
 
 class SmsGateApi(object):
@@ -23,13 +28,13 @@ class SmsGateApi(object):
         """Initializes SmsGateApi class.
 
         :param login: sms.sluzba.cz login
-        :rtype login: string
+        :type login: string
         :param password: password to sms.sluzba.cz
-        :rtype password: string
+        :type password: string
         :param timeout: http connection timeout in seconds
-        :rtype timeout: int
+        :type timeout: int
         :param use_ssl: whether to use ssl via http or not
-        :rtype use_ssl: bool
+        :type use_ssl: bool
         :returns: SmsGateApi instance
         :rtype: smssluzbacz_api.lite.SmsGateApi
 
@@ -39,16 +44,15 @@ class SmsGateApi(object):
         self.timeout = timeout
         self.use_ssl = use_ssl
 
-
     def send(self, tel_number, message, use_post=True):
         """Sends SMS via sms.sluzba.cz.
 
         :param tel_number: telephone number of SMS receiver
-        :rtype tel_number: string
+        :type tel_number: string
         :param message: text body of SMS
-        :rtype message: string
+        :type message: string
         :param use_post: whether to use GET or POST http method
-        :rtype use_post: bool
+        :type use_post: bool
         :returns: True is SMS was successfully sent
         :rtype: bool
         :raises: ValueError, urllib2.URLError, urllib2.HTTPError, GateError
@@ -67,28 +71,30 @@ class SmsGateApi(object):
         log.debug('Params built: %s', params)
         log.info('Sending SMS to number: %s, message text: %s', tel_number, message)
         if use_post:
-            transport = Transport(SmsGateApi.URL_SSL if self.use_ssl else SmsGateApi.URL, timeout=self.timeout)
-            response, contents = transport.process(params=params)
+            response = requests.post(SmsGateApi.URL_SSL if self.use_ssl else SmsGateApi.URL, data=dict(params),
+                                     headers={'User-Agent': USER_AGENT, 'Accept': 'text/plain'},
+                                     timeout=self.timeout)
         else:
             encoded_params = urllib.urlencode(params)
-            encoded_url = '?'.join([SmsGateApi.URL_SSL, encoded_params]) if self.use_ssl else '?'.join([SmsGateApi.URL, encoded_params])
-            transport = Transport(encoded_url, timeout=self.timeout)
-            response, contents = transport.process()
-        if response.code != 200:
+            if self.use_ssl:
+                encoded_url = '?'.join([SmsGateApi.URL_SSL, encoded_params])
+            else:
+                encoded_url = '?'.join([SmsGateApi.URL, encoded_params])
+            response = requests.get(encoded_url, headers={'User-Agent': USER_AGENT}, timeout=self.timeout)
+        if response.status_code != 200:
             raise GateError
-        if re.match(r'^{0}'.format(TelephoneNumberError.code), contents) is not None:
+        if re.match(r'^{0}'.format(TelephoneNumberError.code), response.text) is not None:
             raise TelephoneNumberError
-        elif re.match(r'^{0}'.format(MessageError.code), contents) is not None:
+        elif re.match(r'^{0}'.format(MessageError.code), response.text) is not None:
             raise MessageError
-        elif contents[:3] == ActionError.code:
+        elif response.text[:3] == ActionError.code:
             raise ActionError
-        elif contents[:3] == LoginError.code:
+        elif response.text[:3] == LoginError.code:
             raise LoginError
-        elif contents[:3] == CreditError.code:
+        elif response.text[:3] == CreditError.code:
             raise CreditError
-        elif contents[:3] == GateError.code:
+        elif response.text[:3] == GateError.code:
             raise GateError
-        elif contents[:3] == '200':
+        elif response.text[:3] == '200':
             log.info('SMS message successfully sent to %s.', tel_number)
             return True
-

@@ -2,8 +2,10 @@ import logging
 from hashlib import md5
 from xml.dom.minidom import parseString
 
-from smssluzbacz_api import Transport, TelephoneNumberError, MessageError, ActionError, LoginError, CreditError, \
-    GateError, TRUNCATE_LIMIT
+import requests
+
+from smssluzbacz_api import TelephoneNumberError, MessageError, ActionError, LoginError, CreditError, \
+    GateError, TRUNCATE_LIMIT, USER_AGENT
 
 
 log = logging.getLogger(__name__)
@@ -25,11 +27,11 @@ class SmsGateApi(object):
         """Initializes SmsGateApi class.
 
         :param login: sms.sluzba.cz login
-        :rtype login: string
+        :type login: string
         :param password: password to sms.sluzba.cz
-        :rtype password: string
+        :type password: string
         :param timeout: http connection timeout in seconds
-        :rtype timeout: int
+        :type timeout: int
         :param use_ssl: whether to use ssl via http or not
         :rtype use_ssl: bool
         :returns: SmsGateApi instance
@@ -45,9 +47,9 @@ class SmsGateApi(object):
         """Sends SMS via sms.sluzba.cz.
 
         :param tel_number: telephone number of SMS receiver
-        :rtype tel_number: string
+        :type tel_number: string
         :param message: text body of SMS
-        :rtype message: string
+        :type message: string
         :returns: True is SMS was successfully sent
         :rtype: bool
         :raises: ValueError, urllib2.URLError, urllib2.HTTPError, GateError
@@ -57,7 +59,6 @@ class SmsGateApi(object):
         """
         if message is not None and len(message) > TRUNCATE_LIMIT:
             log.warn('Message text exceeds %d characters and will be automatically truncated', TRUNCATE_LIMIT)
-        transport = Transport(SmsGateApi.URL_SSL if self.use_ssl else SmsGateApi.URL, timeout=self.timeout)
         params = (
             ('msg', message),
             ('msisdn', tel_number),
@@ -67,10 +68,11 @@ class SmsGateApi(object):
         )
         log.debug('Post params built: %s', params)
         log.info('Sending SMS to number: %s, message text: %s', tel_number, message)
-        response, contents = transport.process(params=params)
-        if response.code != 200:
+        response = requests.post(SmsGateApi.URL_SSL if self.use_ssl else SmsGateApi.URL, data=dict(params),
+                                 headers={'User-Agent': USER_AGENT, 'Accept': 'text/plain'}, timeout=self.timeout)
+        if response.status_code != 200:
             raise GateError
-        dom = parseString(contents)
+        dom = parseString(response.text)
         code = dom.getElementsByTagName('id')[0].childNodes[0].data
         if code == TelephoneNumberError.code:
             raise TelephoneNumberError
