@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser(description='Processes login, password and rece
 parser.add_argument('login', metavar='login', type=str, help='sms.sluzba.cz login')
 parser.add_argument('password', metavar='password', type=str, help='sms.sluzba.cz password')
 parser.add_argument('tel_number', metavar='tel_number', type=str, help='number of SMS receiver')
-parser.add_argument('--use-ssl', metavar='use_ssl', type=bool, help='whether to use ssl over HTTP', default=False,
+parser.add_argument('--use-ssl', action='store_true', help='whether to use ssl over HTTP', default=False,
                     required=False)
 parser.add_argument('--timeout', metavar='timeout', type=float, help='http connection timeout', default=2,
                     required=False)

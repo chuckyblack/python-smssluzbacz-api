@@ -63,13 +63,14 @@ Tests
 
 **Tested on environment**
 
-- Xubuntu Linux 12.04 LTS precise 64-bit
+- Xubuntu Linux 12.04.02 LTS precise 64-bit
 - python 2.7.3
 - python unittest
+- mock
 
 **Running tests**
 
-To run the unit tests run command: ::
+To run the unit tests, first install `tests_require` dependencies from setup.py, then run command: ::
 
  $ python test.py
  $ python setup.py test
@@ -104,7 +105,7 @@ Authors
 | Jozef Sevcik, CodeScale s.r.o.
 | char0n (Vladimir Gorej, CodeScale s.r.o.)
 | email: info@codescale.net
-| web: http://www.codescale.net
+| web: http://www.codescale.net/
 
 
 References
