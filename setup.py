@@ -22,7 +22,7 @@ setup(
     author=u'Vladimír Gorej, Jozef Ševčík',
     author_email='info@codescale.net',
     url='http://www.codescale.net/en/community#smssluzbacz-api',
-    download_url='https://github.com/jsk/python-smssluzbacz-api/tarball/master',
+    download_url='https://github.com/CodeScaleInc/python-smssluzbacz-api/tarball/master',
     license='BSD',
     keywords = 'sms api',
     packages=find_packages(),
