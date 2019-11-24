@@ -21,8 +21,8 @@ class SmsGateApi(object):
     with no advanced options and operations.
 
     """
-    URL = 'http://smsgateapi.sluzba.cz/apilite30/sms'
-    URL_SSL = 'https://smsgateapi.sluzba.cz/apilite30/sms'
+    URL = "http://smsgateapi.sms-sluzba.cz/apilite30/sms"
+    URL_SSL = "https://smsgateapi.sms-sluzba.cz/apilite30/sms"
 
     def __init__(self, login, password, timeout=2, use_ssl=True):
         """Initializes SmsGateApi class.
