@@ -38,6 +38,10 @@ class SmsGateApi(object):
         :rtype: smssluzbacz_api.post.SmsGateApi
 
         """
+
+        if isinstance(password, str):
+            password = password.encode("utf-8")
+
         self.login = login
         self.password = password
         self.timeout = timeout
@@ -91,4 +95,5 @@ class SmsGateApi(object):
             return True
 
     def __get_auth_key(self, message):
-        return md5(md5(self.password).hexdigest() + self.login + SmsGateApi.ACTION_SEND + message[:31]).hexdigest()
+        auth = md5(self.password).hexdigest() + self.login + SmsGateApi.ACTION_SEND + message[:31]
+        return md5(auth.encode("utf-8")).hexdigest()
